@@ -25,7 +25,7 @@ const Navbar = () => {
 
       {/* Second Navbar */}
       <nav className="bg-white border-b border-gray-300 shadow-sm">
-        <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+        <div className="container mx-auto px-2 py-1 flex justify-between items-center">
           {/* Center Links */}
           <div className="flex space-x-8">
             <Link href="/Dashboard" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
@@ -46,7 +46,7 @@ const Navbar = () => {
               <span className="text-sm">Departments & Programs</span>
               <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" /> {/* Dropdown icon */}
             </Link>
-            <Link href="/faculty" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
+            <Link href="/Faculty" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaChalkboardTeacher className="text-2xl text-purple-500 mb-2" />
               <span className="text-sm">Faculty Directory</span>
             </Link>
