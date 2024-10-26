@@ -36,7 +36,7 @@ const Navbar = () => {
               <FaUser className="text-2xl text-black mb-2" />
               <span className="text-sm">Your Profile</span>
             </Link>
-            <Link href="/profile" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
+            <Link href="/InstituteProfile" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaUniversity className="text-2xl text-green-500 mb-2" />
               <span className="text-sm">Institute Profile</span>
               <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" /> {/* Dropdown icon */}

@@ -1,14 +1,13 @@
 // pages/faculty.js
 
 import Layout from '../components/Layout';
-import VocalPerson from '../components/profileForm';
-import InstituteProfile from '../components/profileForm';
+import InstituteProfile from '../components/InstituteProfileForm';
 
 const FacultyPage = () => {
     return (
         <Layout>
             <div className="container mx-auto px-4 py-8">
-                <VocalPerson/>
+                <InstituteProfile/>
             </div>
         </Layout>
     );
