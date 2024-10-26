@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface VocalPersonData {
   name: string;
@@ -12,23 +12,57 @@ interface VocalPersonData {
 
 const VocalPerson: React.FC = () => {
   const [profile, setProfile] = useState<VocalPersonData>({
-    name: "Alice Green",
-    email: "vocalperson@example.com",
-    phone: "223-334-5566",
-    cnic: "12345-6789012-3",
-    designation: "Vocal Person",
+    name: "",
+    email: "",
+    phone: "",
+    cnic: "",
+    designation: "",
   });
 
   const [editMode, setEditMode] = useState<boolean>(false);
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await fetch('/api/vocalPerson');
+        if (response.ok) {
+          const data = await response.json();
+          setProfile(data);
+        } else {
+          console.error('Failed to fetch profile.');
+        }
+      } catch (error) {
+        console.error('Error fetching vocal person profile:', error);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleChange = (field: keyof VocalPersonData, value: string) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Updated Vocal Person Profile:", profile);
-    setEditMode(false);
+    try {
+      const response = await fetch('/api/vocalPerson', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(profile),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('Updated Vocal Person Profile:', data);
+        setEditMode(false);
+      } else {
+        console.error('Failed to update profile.');
+      }
+    } catch (error) {
+      console.error('Error updating vocal person profile:', error);
+    }
   };
 
   const renderDisplay = () => (
