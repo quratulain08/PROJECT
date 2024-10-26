@@ -28,7 +28,7 @@ const Navbar = () => {
         <div className="container mx-auto px-2 py-1 flex justify-between items-center">
           {/* Center Links */}
           <div className="flex space-x-8">
-            <Link href="/Dashboard" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
+            <Link href="/dashboard" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaHome className="text-2xl text-blue-500 mb-2" /> 
               <span className="text-sm">Dashboard</span>
             </Link>
@@ -41,7 +41,7 @@ const Navbar = () => {
               <span className="text-sm">Institute Profile</span>
               <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" /> {/* Dropdown icon */}
             </Link>
-            <Link href="/departments-programs" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
+            <Link href="/department" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaFolder className="text-2xl text-red-500 mb-2" />
               <span className="text-sm">Departments & Programs</span>
               <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" /> {/* Dropdown icon */}
