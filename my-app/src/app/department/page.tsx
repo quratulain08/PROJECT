@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import Layout from '../components/Layout';
 
 const DepartmentDashboard: React.FC = () => {
   const [department, setDepartment] = useState({
@@ -41,6 +42,7 @@ const DepartmentDashboard: React.FC = () => {
   };
 
   return (
+    <Layout>
     <div className="container">
       <h2>New Department Information</h2>
       <form onSubmit={handleSubmit}>
@@ -238,6 +240,7 @@ const DepartmentDashboard: React.FC = () => {
         }
       `}</style>
     </div>
+    </Layout>
   );
 };
 
