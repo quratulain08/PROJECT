@@ -1,4 +1,3 @@
-// pages/faculty.js
 import FacultyForm from '../components/FacultyForm';
 import Layout from '../components/Layout';
 
