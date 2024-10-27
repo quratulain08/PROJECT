@@ -28,7 +28,7 @@ export async function POST(req: Request) {
     return NextResponse.json(newFaculty, { status: 201 }); // Respond with the created faculty member
   } catch (error) {
     console.error('Error creating faculty member:', error);
-    return NextResponse.json({ error: 'Failed to create faculty member' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create faculty member1' }, { status: 500 });
   }
 }
 

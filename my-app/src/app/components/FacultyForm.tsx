@@ -75,14 +75,19 @@ export default function FacultyForm() {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to create faculty member');
+                throw new Error('Failed to create faculty member2');
             }
 
             const data = await response.json();
             setMessage(`Faculty member ${data.name} created successfully!`);
             // Clear the form or reset state here if needed
-        } catch (error) {
-            setMessage(`Error: ${error.message}`);
+        }catch (error) {
+            if (error instanceof Error) {
+                setMessage(`Error: ${error.message}`);
+            } else {
+                setMessage('An unknown error occurred.');
+            }
+        
         } finally {
             setLoading(false);
         }
@@ -339,16 +344,18 @@ export default function FacultyForm() {
                         </div>
                     </div>
 
-                    {/* Submit Button */}
-                    <div className="col-span-2">
-                        <button 
-                            type="submit" 
-                            className={`w-full p-4 bg-green-500 text-white rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`} 
-                            disabled={loading}
-                        >
-                            {loading ? 'Submitting...' : 'Add Faculty'}
-                        </button>
-                    </div>
+                   {/* Submit Button */}
+<div className="col-span-2">
+    <button
+        type="submit"
+        className={`w-full p-4 text-white font-semibold rounded-md ${loading ? 'bg-gray-400' : 'bg-green-600 hover:bg-green-700'}`}
+        disabled={loading}
+    >
+        {loading ? 'Submitting...' : 'Submit'}
+    </button>
+    {message && <p className="mt-2 text-center text-green-600">{message}</p>}
+</div>
+
                 </div>
             </form>
             {message && <div className="mt-4 text-red-500">{message}</div>}
