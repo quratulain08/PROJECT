@@ -84,10 +84,7 @@ const DepartmentDashboard: React.FC = () => {
   return (
     <div className="max-w-8xl mx-auto w-full">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-semibold">Department Dashboard</h1>
-        <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-          Add Program
-        </button>
+        <h1 className="text-lg font-semibold">Add new Department</h1>
       </div>
 
       <form className="p-2 text-sm" onSubmit={handleSubmit}>
