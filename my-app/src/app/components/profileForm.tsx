@@ -16,22 +16,22 @@ const VocalPerson: React.FC = () => {
 
   // Fetch profile data on component mount
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const response = await fetch('/api/vocalPersonProfile');
-        if (response.ok) {
-          const data = await response.json();
-          setProfile(data);
-        } else {
-          console.error('Failed to fetch profile.');
-        }
-      } catch (error) {
-        console.error('Error fetching vocal person profile:', error);
-      }
-    };
-
     fetchProfile();
   }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const response = await fetch('/api/vocalPersonProfile');
+      if (response.ok) {
+        const data = await response.json();
+        setProfile(data);
+      } else {
+        console.error('Failed to fetch profile.');
+      }
+    } catch (error) {
+      console.error('Error fetching vocal person profile:', error);
+    }
+  };
 
   const handleChange = (field: keyof VocalPersonData, value: string) => {
     if (profile) {
@@ -42,24 +42,37 @@ const VocalPerson: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { email, cnic, ...profileToUpdate } = profile || {};
-      const response = await fetch('/api/vocalPersonProfile', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileToUpdate), // Send only the fields that can be changed
-      });
+        // Include email and cnic in the payload
+        const { email, cnic, ...profileToUpdate } = profile || {};
+        
+        // Add email and cnic back to the payload
+        const payloadToUpdate = { email, cnic, ...profileToUpdate };
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Updated Vocal Person Profile:', data);
-        setEditMode(false);
-      } else {
-        console.error('Failed to update profile.');
-      }
+        // Log the data being sent to the API
+        console.log('Data being sent to API:', JSON.stringify(payloadToUpdate, null, 2));
+
+        const response = await fetch('/api/vocalPersonProfile', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payloadToUpdate),
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log('Updated Vocal Person Profile:', data);
+            setEditMode(false);
+            fetchProfile(); // Fetch the updated profile
+        } else {
+            const errorData = await response.json(); // Get the error details
+            console.error('Failed to update profile:', errorData);
+            alert(`Failed to update profile: ${errorData.error || 'Unknown error'}`);
+        }
     } catch (error) {
-      console.error('Error updating vocal person profile:', error);
+        console.error('Error updating vocal person profile:', error);
+        // Additional logging for debugging
+        alert('An error occurred while updating the profile. Please try again later.');
     }
-  };
+};
 
   const renderDisplay = () => (
     <div className="p-6 bg-gray-100 shadow-md rounded-md">

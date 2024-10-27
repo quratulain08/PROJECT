@@ -53,6 +53,32 @@ export async function POST(req: Request) {
   }
 }
 
+// PUT: Update the Vocal Person profile in the database.
+export async function PUT(req: Request) {
+  try {
+    const { name, email, phone,cnic , designation } = await req.json();
+
+    await connectToDatabase();
+
+    // Use email or another unique identifier to find the profile
+    const vocalPerson = await VocalPerson.findOneAndUpdate(
+      { email }, // Adjust this line to match how you identify the profile
+      { name, phone, designation },
+      { new: true, runValidators: true } // Return the updated document
+    );
+
+    if (!vocalPerson) {
+      return NextResponse.json({ error: 'Vocal Person not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: 'Vocal Person profile updated successfully!' });
+  } catch (error) {
+    console.error('Error updating Vocal Person profile:', error);
+    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+  }
+}
+
+
 // DELETE: Remove the Vocal Person profile from the database.
 export async function DELETE(req: Request) {
   try {
