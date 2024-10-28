@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from 'react';
+import DepartmentInfo from './DepartmentInfo';
 
 const DepartmentDashboard: React.FC = () => {
   const [department, setDepartment] = useState({
@@ -294,7 +295,14 @@ const DepartmentDashboard: React.FC = () => {
           </div>
         </div>
       </form>
+
+      
+      <div className="container mx-auto px-4 py-8">
+                <DepartmentInfo />
+            </div>
     </div>
+
+    
   );
 };
 

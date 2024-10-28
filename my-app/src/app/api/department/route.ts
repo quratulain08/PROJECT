@@ -1,5 +1,3 @@
-// pages/api/departments/route.ts
-
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb'; // Adjust the path as necessary
 import Department from '../../../models/Department'; // Adjust the path as necessary
@@ -32,7 +30,29 @@ export async function POST(req: Request) {
   }
 }
 
-// DELETE: Remove a department from the database by id.
+// PUT: Update a department by ID.
+export async function PUT(req: Request) {
+  try {
+    const { id, ...updatedData } = await req.json(); // Parse the ID and updated data
+    await connectToDatabase(); // Ensure the database is connected
+
+    const updatedDepartment = await Department.findByIdAndUpdate(id, updatedData, {
+      new: true, // Return the updated document
+      runValidators: true, // Ensure the updated data meets schema requirements
+    });
+
+    if (!updatedDepartment) {
+      return NextResponse.json({ error: 'Department not found' }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedDepartment); // Respond with the updated department
+  } catch (error) {
+    console.error('Error updating department:', error);
+    return NextResponse.json({ error: 'Failed to update department' }, { status: 500 });
+  }
+}
+
+// DELETE: Remove a department from the database by ID.
 export async function DELETE(req: Request) {
   try {
     const { id } = await req.json(); // Get the id from the request body

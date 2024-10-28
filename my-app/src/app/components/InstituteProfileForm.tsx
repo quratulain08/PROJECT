@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 interface ProfileData {
-  role: string; // Added role to the ProfileData interface
+  role: string;
   name: string;
   email: string;
   phone: string;
@@ -35,6 +35,8 @@ const InstituteProfile: React.FC = () => {
     tenureStart: "",
     tenureEnd: "",
   });
+  
+  const [addingRole, setAddingRole] = useState<string | null>(null);
 
   // Fetch profiles on component mount
   useEffect(() => {
@@ -42,9 +44,8 @@ const InstituteProfile: React.FC = () => {
       try {
         const response = await fetch("/api/instituteProfile");
         const data = await response.json();
-        // Organize data by role
         const formattedData = data.reduce((acc: Record<string, ProfileData>, profile: ProfileData) => {
-          acc[profile.role] = profile; // Assuming each profile has a 'role' field
+          acc[profile.role] = profile;
           return acc;
         }, {});
         setProfileData(formattedData);
@@ -78,7 +79,7 @@ const InstituteProfile: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(profileData[role]), // Send the profile data
+        body: JSON.stringify(profileData[role]),
       });
 
       if (!response.ok) {
@@ -100,7 +101,7 @@ const InstituteProfile: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newProfile), // Send the new profile data
+        body: JSON.stringify(newProfile),
       });
 
       if (!response.ok) {
@@ -125,6 +126,7 @@ const InstituteProfile: React.FC = () => {
         tenureStart: "",
         tenureEnd: "",
       });
+      setAddingRole(null);
     } catch (error) {
       console.error('Error adding profile:', error);
     }
@@ -137,7 +139,7 @@ const InstituteProfile: React.FC = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ role }), // Send the role to delete
+        body: JSON.stringify({ role }),
       });
 
       if (!response.ok) {
@@ -148,7 +150,7 @@ const InstituteProfile: React.FC = () => {
       console.log(result.message);
       setProfileData((prevData) => {
         const newData = { ...prevData };
-        delete newData[role]; // Remove deleted profile from state
+        delete newData[role];
         return newData;
       });
     } catch (error) {
@@ -156,45 +158,53 @@ const InstituteProfile: React.FC = () => {
     }
   };
 
-  const renderDisplay = (role: string, title: string) => (
-    <div className="p-6 bg-gray-100 shadow-md rounded-lg border">
-      <h2 className="text-center text-xl font-bold text-green-600 mb-4">
-        {title}
-      </h2>
-      <div className="space-y-2">
-        <p><strong>Name:</strong> {profileData[role]?.name}</p>
-        <p><strong>Email:</strong> {profileData[role]?.email}</p>
-        <p><strong>Phone:</strong> {profileData[role]?.phone}</p>
-        <p><strong>CNIC:</strong> {profileData[role]?.cnic}</p>
-        {profileData[role]?.department && (
-          <p><strong>Department:</strong> {profileData[role].department}</p>
-        )}
-        {profileData[role]?.officeLocation && (
-          <p><strong>Office Location:</strong> {profileData[role].officeLocation}</p>
-        )}
-        {profileData[role]?.tenureStart && (
-          <p><strong>Tenure Start:</strong> {profileData[role].tenureStart}</p>
-        )}
-        {profileData[role]?.tenureEnd && (
-          <p><strong>Tenure End:</strong> {profileData[role].tenureEnd}</p>
+  const renderDisplay = (role: string, title: string) => {
+    const profile = profileData[role];
+  
+    return (
+      <div className="p-6 bg-gray-100 shadow-md rounded-lg border">
+        <h2 className="text-center text-xl font-bold text-green-600 mb-4">
+          {title}
+        </h2>
+        {profile ? (
+          <div className="space-y-2">
+            <p><strong>Name:</strong> {profile.name}</p>
+            <p><strong>Email:</strong> {profile.email}</p>
+            <p><strong>Phone:</strong> {profile.phone}</p>
+            <p><strong>CNIC:</strong> {profile.cnic}</p>
+            {profile.department && (
+              <p><strong>Department:</strong> {profile.department}</p>
+            )}
+            {profile.officeLocation && (
+              <p><strong>Office Location:</strong> {profile.officeLocation}</p>
+            )}
+            {profile.tenureStart && (
+              <p><strong>Tenure Start:</strong> {profile.tenureStart}</p>
+            )}
+            {profile.tenureEnd && (
+              <p><strong>Tenure End:</strong> {profile.tenureEnd}</p>
+            )}
+            <button
+              onClick={() => setEditMode((prev) => ({ ...prev, [role]: true }))}
+              className="mt-4 w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition"
+            >
+              Edit {title}
+            </button>
+            <button
+              onClick={() => handleDelete(role)}
+              className="mt-2 w-full bg-red-500 text-white p-3 rounded-md hover:bg-red-600 transition"
+            >
+              Delete {title}
+            </button>
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">No data available for this role.</p>
         )}
       </div>
-      <button
-        onClick={() => setEditMode((prev) => ({ ...prev, [role]: true }))}
-        className="mt-4 w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition"
-      >
-        Edit {title}
-      </button>
-      <button
-        onClick={() => handleDelete(role)}
-        className="mt-2 w-full bg-red-500 text-white p-3 rounded-md hover:bg-red-600 transition"
-      >
-        Delete {title}
-      </button>
-    </div>
-  );
-
-  const renderForm = (role: string, title: string, fields: JSX.Element) => (
+    );
+  };
+  
+  const renderForm = (role: string, title: string) => (
     <div className="p-6 bg-white shadow-md rounded-lg border">
       <h2 className="text-center text-xl font-bold text-green-600 mb-4">
         Edit {title}
@@ -230,84 +240,167 @@ const InstituteProfile: React.FC = () => {
           disabled
           className="w-full p-3 border bg-gray-100 rounded-md"
         />
-        {fields}
+        <input
+          type="text"
+          placeholder="Department"
+          value={profileData[role]?.department}
+          onChange={(e) => handleChange(role, "department", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="text"
+          placeholder="Designation"
+          value={profileData[role]?.designation}
+          onChange={(e) => handleChange(role, "designation", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="text"
+          placeholder="Office Location"
+          value={profileData[role]?.officeLocation}
+          onChange={(e) => handleChange(role, "officeLocation", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="date"
+          placeholder="Tenure Start"
+          value={profileData[role]?.tenureStart}
+          onChange={(e) => handleChange(role, "tenureStart", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="date"
+          placeholder="Tenure End"
+          value={profileData[role]?.tenureEnd}
+          onChange={(e) => handleChange(role, "tenureEnd", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
         <button
           type="submit"
           className="w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600 transition"
         >
-          Save {title}
+          Save Changes
+        </button>
+        <button
+          onClick={() => setEditMode((prev) => ({ ...prev, [role]: false }))}
+          type="button"
+          className="w-full bg-gray-300 text-gray-700 p-3 rounded-md hover:bg-gray-400 transition"
+        >
+          Cancel
         </button>
       </form>
     </div>
   );
 
-  const renderProfileSection = (role: string, title: string) => (
-    <>
-      {profileData[role] ? (
-        editMode[role] ? renderForm(role, title, (
-          <>
-            <input
-              type="text"
-              placeholder="Department"
-              value={profileData[role]?.department}
-              onChange={(e) => handleChange(role, "department", e.target.value)}
-              className="w-full p-3 border rounded-md"
-            />
-            <input
-              type="text"
-              placeholder="Designation"
-              value={profileData[role]?.designation}
-              onChange={(e) => handleChange(role, "designation", e.target.value)}
-              className="w-full p-3 border rounded-md"
-            />
-            <input
-              type="text"
-              placeholder="Office Location"
-              value={profileData[role]?.officeLocation}
-              onChange={(e) => handleChange(role, "officeLocation", e.target.value)}
-              className="w-full p-3 border rounded-md"
-            />
-            <input
-              type="date"
-              placeholder="Tenure Start"
-              value={profileData[role]?.tenureStart}
-              onChange={(e) => handleChange(role, "tenureStart", e.target.value)}
-              className="w-full p-3 border rounded-md"
-            />
-            <input
-              type="date"
-              placeholder="Tenure End"
-              value={profileData[role]?.tenureEnd}
-              onChange={(e) => handleChange(role, "tenureEnd", e.target.value)}
-              className="w-full p-3 border rounded-md"
-            />
-          </>
-        )) : renderDisplay(role, title)
-      ) : (
-        <div className="p-6 bg-gray-100 shadow-md rounded-lg border max-w-md mx-auto">
-          <h2 className="text-center text-xl font-bold text-green-600 mb-4">
-            {title} (No data available)
-          </h2>
-          <button
-            onClick={() => handleAddProfile(role)}
-            className="mt-4 w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600 transition"
-          >
-            Add {title}
-          </button>
-        </div>
-      )}
-    </>
+  const renderAddProfileForm = () => (
+    <div className="p-6 bg-white shadow-md rounded-lg border">
+      <h2 className="text-center text-xl font-bold text-green-600 mb-4">
+        Add New Profile
+      </h2>
+      <form className="space-y-4" onSubmit={(e) => {
+        e.preventDefault();
+        if (addingRole) handleAddProfile(addingRole);
+      }}>
+        <select
+          value={addingRole || ""}
+          onChange={(e) => setAddingRole(e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          required
+        >
+          <option value="" disabled>Select Role</option>
+          <option value="vc">Vice Chancellor</option>
+          <option value="dean">Dean</option>
+          <option value="chairman">Chairman Academics</option>
+          <option value="deputy">Deputy Academics</option>
+        </select>
+        <input
+          type="text"
+          placeholder="Name"
+          value={newProfile.name}
+          onChange={(e) => handleNewProfileChange("name", e.target.value)}
+          required
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={newProfile.email}
+          onChange={(e) => handleNewProfileChange("email", e.target.value)}
+          required
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="text"
+          placeholder="Phone"
+          value={newProfile.phone}
+          onChange={(e) => handleNewProfileChange("phone", e.target.value)}
+          required
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="text"
+          placeholder="CNIC"
+          value={newProfile.cnic}
+          onChange={(e) => handleNewProfileChange("cnic", e.target.value)}
+          required
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="text"
+          placeholder="Department"
+          value={newProfile.department}
+          onChange={(e) => handleNewProfileChange("department", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="text"
+          placeholder="Designation"
+          value={newProfile.designation}
+          onChange={(e) => handleNewProfileChange("designation", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="text"
+          placeholder="Office Location"
+          value={newProfile.officeLocation}
+          onChange={(e) => handleNewProfileChange("officeLocation", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="date"
+          placeholder="Tenure Start"
+          value={newProfile.tenureStart}
+          onChange={(e) => handleNewProfileChange("tenureStart", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <input
+          type="date"
+          placeholder="Tenure End"
+          value={newProfile.tenureEnd}
+          onChange={(e) => handleNewProfileChange("tenureEnd", e.target.value)}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600 transition"
+        >
+          Add Profile
+        </button>
+      </form>
+    </div>
   );
 
   return (
-    <div className="container mx-auto">
-      <h1 className="text-3xl font-bold text-center my-6">Institute Profiles</h1>
-      <div className="space-y-4">
-        {renderProfileSection("dean", "Dean")}
-        {renderProfileSection("vc", "Vice Chancellor")}
-        {renderProfileSection("chairman", "Chairman")}
-        {renderProfileSection("deputy", "Deputy")}
-      </div>
+    <div className="max-w-3xl mx-auto p-8">
+      {renderDisplay("vc", "Vice Chancellor")}
+      {editMode.vc && renderForm("vc", "Vice Chancellor")}
+      {renderDisplay("dean", "Dean")}
+      {editMode.dean && renderForm("dean", "Dean")}
+      {renderDisplay("chairman", "Chairman Academics")}
+      {editMode.chairman && renderForm("chairman", "Chairman Academics")}
+      {renderDisplay("deputy", "Deputy Academics")}
+      {editMode.deputy && renderForm("deputy", "Deputy Academics")}
+      {renderAddProfileForm()}
     </div>
   );
 };
