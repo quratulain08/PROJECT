@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
 import DepartmentDashboard from "@/app/components/departmentForm";
 
 interface Department {
@@ -24,11 +24,7 @@ const DepartmentList: React.FC = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
-  const [showForm, setShowForm] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
-
-  const router = useRouter(); // Initialize useRouter
+  const router = useRouter();
 
   useEffect(() => {
     fetchDepartments();
@@ -48,6 +44,9 @@ const DepartmentList: React.FC = () => {
     }
   };
 
+  const handleDepartmentClick = (id: string) => {
+    router.push(`/department/${id}`); // Navigate to department detail page
+  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-600">{error}</p>;
@@ -56,8 +55,6 @@ const DepartmentList: React.FC = () => {
     <div className="max-w-8xl mx-auto w-full">
       <h1 className="text-lg font-semibold mb-6">Departments</h1>
 
-     
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {departments.length === 0 ? (
           <p>No departments available.</p>
@@ -65,7 +62,15 @@ const DepartmentList: React.FC = () => {
           departments.map((dept) => (
             <div
               key={dept.id}
-              className="border border-green-500 rounded-lg shadow-lg p-6 bg-white"
+              className="border border-green-500 rounded-lg shadow-lg p-6 bg-white cursor-pointer hover:shadow-xl transition-shadow"
+              onClick={() => handleDepartmentClick(dept.id)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleDepartmentClick(dept.id);
+                }
+              }}
             >
               <h2 className="text-green-600 font-semibold text-lg mb-2">
                 {dept.honorific} {dept.hodName} - {dept.name}
@@ -94,15 +99,10 @@ const DepartmentList: React.FC = () => {
                 <span className="font-bold">Address:</span> {dept.address},{" "}
                 {dept.city}, {dept.province}
               </p>
-              <div className="mt-4 flex space-x-2">
-              
-              </div>
             </div>
           ))
         )}
       </div>
-
-   
     </div>
   );
 };
