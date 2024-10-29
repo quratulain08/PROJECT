@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
 interface Department {
-  id: string;
+  _id: string; // Ensure you're using `_id` here
   name: string;
   startDate: string;
   category: string;
@@ -76,8 +76,7 @@ const DepartmentDetail: React.FC = () => {
             </p>
           )}
           <p className="text-sm text-gray-600">
-            <span className="font-bold">Address:</span> {department.address},{" "}
-            {department.city}, {department.province}
+            <span className="font-bold">Address:</span> {department.address}, {department.city}, {department.province}
           </p>
         </div>
       </div>

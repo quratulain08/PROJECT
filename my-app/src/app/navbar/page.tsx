@@ -56,7 +56,7 @@ const Navbar: React.FC = () => {
               <span className="text-sm">Institute Profile</span>
               <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" />
             </Link>
-            <Link href="/department" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
+            <Link href="/Department" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaFolder className="text-2xl text-red-500 mb-2" />
               <span className="text-sm">Departments & Programs</span>
               <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" />
