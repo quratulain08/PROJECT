@@ -2,14 +2,22 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import VocalPerson from '@/models/vocalPerson';
 
-// GET: Fetch the Vocal Person profile from the database.
-export async function GET() {
+// GET: Fetch the Vocal Person profile from the database by email.
+export async function GET(req: Request) {
   try {
+    // Get the email from the request's query string.
+    const { searchParams } = new URL(req.url);
+    const email = searchParams.get('email');
+
+    if (!email) {
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    }
+
     // Connect to the MongoDB database.
     await connectToDatabase();
 
-    // Fetch the vocal person profile.
-    const vocalPerson = await VocalPerson.find();
+    // Fetch the vocal person profile matching the provided email.
+    const vocalPerson = await VocalPerson.findOne({ email });
 
     if (!vocalPerson) {
       return NextResponse.json({ error: 'Vocal Person not found' }, { status: 404 });
@@ -21,6 +29,7 @@ export async function GET() {
     return NextResponse.json({ error: 'Failed to fetch Vocal Person profile' }, { status: 500 });
   }
 }
+
 
 // POST: Create or update the Vocal Person profile in the database.
 export async function POST(req: Request) {

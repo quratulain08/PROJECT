@@ -61,14 +61,14 @@ const DepartmentList: React.FC = () => {
         ) : (
           departments.map((dept) => (
             <div
-              key={dept.id}
+              key={dept._id}
               className="border border-green-500 rounded-lg shadow-lg p-6 bg-white cursor-pointer hover:shadow-xl transition-shadow"
-              onClick={() => handleDepartmentClick(dept.id)}
+              onClick={() => handleDepartmentClick(dept._id)}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
-                  handleDepartmentClick(dept.id);
+                  handleDepartmentClick(dept._id);
                 }
               }}
             >

@@ -29,8 +29,9 @@ const Login: React.FC = () => {
       const data = await response.json();
       console.log('Login successful:', data);
 
-      // Store token if needed
+      // Store the token and email in localStorage
       localStorage.setItem('token', data.token);
+      localStorage.setItem('email', email); // Store email
 
       // Navigate to Navbar component
       router.push('/navbar'); 
