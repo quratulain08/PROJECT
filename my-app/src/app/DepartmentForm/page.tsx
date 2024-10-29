@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import DepartmentInfo from './DepartmentInfo';
+
 
 const DepartmentDashboard: React.FC = () => {
   const [department, setDepartment] = useState({

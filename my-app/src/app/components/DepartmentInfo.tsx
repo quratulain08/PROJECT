@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 interface Department {
-  id: string; // Assuming departments have unique IDs
+  id: string;
   name: string;
   startDate: string;
   category: string;
@@ -23,9 +24,9 @@ const DepartmentInfo: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
-  const [showForm, setShowForm] = useState(false);
 
-  // Fetch department data on component mount
+  const router = useRouter();
+
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -71,32 +72,14 @@ const DepartmentInfo: React.FC = () => {
 
   const handleEdit = (department: Department) => {
     setEditingDepartment(department);
-    setShowForm(true);
+    router.push('/DepartmentForm');
   };
 
- 
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const url = editingDepartment
-      ? `/api/department/${editingDepartment.id}`
-      : "/api/department";
-    const method = editingDepartment ? "PUT" : "POST";
-
+  const handleAddNewDepartment = () => {
     try {
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(editingDepartment),
-      });
-
-      if (!response.ok) throw new Error("Failed to save department");
-
-      await fetchDepartments(); // Refresh the department list
-      setShowForm(false); // Close the form
-    } catch (err) {
-      console.error(err);
-      setError("Failed to save the department.");
+      router.push('/DepartmentForm');
+    } catch (error: unknown) {
+      console.error('Navigation error:', error);
     }
   };
 
@@ -133,9 +116,6 @@ const DepartmentInfo: React.FC = () => {
             </p>
             <p>
               <span className="font-bold">Phone:</span> {dept.phone}
-            </p>
-            <p>
-              <span className="font-bold">id:</span> {dept._id}
             </p>
             {dept.landLine && (
               <p>
