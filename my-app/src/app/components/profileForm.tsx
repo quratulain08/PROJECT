@@ -16,22 +16,28 @@ const VocalPerson: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch profile data using GET method
+  // Fetch profile data using the email from localStorage
   useEffect(() => {
-    fetchProfile();
+    const email = localStorage.getItem('email'); // Get email from localStorage
+    if (email) {
+      fetchProfile(email); // Call the fetch function with the email
+    } else {
+      setError('Email not found in localStorage.');
+      setLoading(false);
+    }
   }, []);
 
-  const fetchProfile = async () => {
+  const fetchProfile = async (email: string) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("/api/vocalPersonProfile", {
+      const response = await fetch(`/api/vocalPersonProfile?email=${email}`, {
         method: "GET",
       });
       if (response.ok) {
-        const data: VocalPersonData = await response.json(); // Specify the type here
+        const data: VocalPersonData = await response.json();
         console.log("Fetched Profile Data:", data);
-        setProfile(data); // Set profile state
+        setProfile(data);
       } else {
         const errorData = await response.json();
         console.error("Failed to fetch profile:", errorData);
@@ -53,23 +59,22 @@ const VocalPerson: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!profile) return; // Guard clause to ensure profile exists
+    if (!profile) return;
 
     try {
       const { email, cnic, ...profileToUpdate } = profile;
-      const payloadToUpdate = { email, cnic, ...profileToUpdate };
 
       const response = await fetch("/api/vocalPersonProfile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payloadToUpdate),
+        body: JSON.stringify({ email, cnic, ...profileToUpdate }),
       });
 
       if (response.ok) {
-        const data: VocalPersonData = await response.json(); // Specify the type here
+        const data: VocalPersonData = await response.json();
         console.log("Updated Vocal Person Profile:", data);
         setEditMode(false);
-        fetchProfile(); // Fetch the updated profile
+        fetchProfile(email); // Refresh profile after update
       } else {
         const errorData = await response.json();
         console.error("Failed to update profile:", errorData);
@@ -77,30 +82,25 @@ const VocalPerson: React.FC = () => {
       }
     } catch (error) {
       console.error("Error updating vocal person profile:", error);
-      alert("An error occurred while updating the profile. Please try again.");
+      alert("An error occurred while updating the profile.");
     }
   };
 
   const renderDisplay = () => (
     <div className="p-6 bg-gray-100 shadow-md rounded-md">
       <h2 className="text-xl font-semibold mb-4">Vocal Person Profile</h2>
-      {profile ? ( // Check if profile is not null
+      {profile ? (
         <>
-          <p><strong>Name:</strong> {profile[0].name}</p>
-          <p><strong>Email:</strong> {profile[0].email}</p>
-          <p><strong>Phone:</strong> {profile[0].phone}</p>
-          <p><strong>CNIC:</strong> {profile[0].cnic}</p>
-          <p><strong>Designation:</strong> {profile[0].designation}</p>
+          <p><strong>Name:</strong> {profile.name}</p>
+          <p><strong>Email:</strong> {profile.email}</p>
+          <p><strong>Phone:</strong> {profile.phone}</p>
+          <p><strong>CNIC:</strong> {profile.cnic}</p>
+          <p><strong>Designation:</strong> {profile.designation}</p>
           <button
             onClick={() => setEditMode(true)}
             className="mt-4 bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition"
           >
             Edit Profile
-          </button>
-          <button
-            className="mt-4 bg-gray-300 text-gray-600 p-3 rounded-md hover:bg-gray-400 transition"
-          >
-            View profile
           </button>
         </>
       ) : (
@@ -109,14 +109,10 @@ const VocalPerson: React.FC = () => {
     </div>
   );
 
-  const viewProfile = () => {
-    // Implement logic to view the profile in a separate page or modal
-    console.log("Viewing profile:", profile);
-  };
   const renderForm = () => (
     <form onSubmit={handleSubmit} className="p-6 bg-white shadow-md rounded-md">
       <h2 className="text-xl font-semibold mb-4">Edit Vocal Person Profile</h2>
-      {profile && ( // Ensure profile is not null
+      {profile && (
         <>
           <input
             type="text"
@@ -159,7 +155,6 @@ const VocalPerson: React.FC = () => {
             required
           />
           <button
-          onClick={viewProfile}
             type="submit"
             className="w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600 transition"
           >
@@ -175,7 +170,7 @@ const VocalPerson: React.FC = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-8">
-      {editMode ? renderForm() : renderDisplay()} {/* Toggle between display and form */}
+      {editMode ? renderForm() : renderDisplay()}
     </div>
   );
 };

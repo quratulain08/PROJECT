@@ -1,19 +1,22 @@
 "use client";
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FaHome, FaUniversity, FaFolder, FaUsers, FaChalkboardTeacher, FaUser } from 'react-icons/fa';
-import { MdKeyboardArrowDown } from 'react-icons/md'; 
-import { useRouter } from 'next/router'; 
+import { MdKeyboardArrowDown } from 'react-icons/md';
 
-const Navbar = () => {
-  //const router = useRouter(); 
+const Navbar: React.FC = () => {
+  const [email, setEmail] = useState<string | null>(null); // State to hold email
+
+  // Get email from localStorage when component mounts
+  useEffect(() => {
+    const storedEmail = localStorage.getItem('email');
+    setEmail(storedEmail);
+  }, []);
 
   const handleLogout = () => {
     localStorage.clear();
-
-    // Redirect to login page after clearing local storage
     setTimeout(() => {
-      //router.push('/Login'); 
-      window.location.href = '/Login';  // Redirect to login page using window.location.href
+      window.location.href = '/Login'; // Redirect to login
     }, 0);
   };
 
@@ -26,7 +29,7 @@ const Navbar = () => {
             <h1 className="text-lg text-gray-700 font-normal">Air University, Islamabad</h1>
           </div>
           <div className="flex items-center">
-            <span className="mr-2 text-gray-700">User</span>
+            <span className="mr-2 text-gray-700">{email ?? 'Guest'}</span>
             <button 
               onClick={handleLogout} 
               className="text-red-500 hover:text-red-700 transition duration-150"
@@ -41,7 +44,7 @@ const Navbar = () => {
         <div className="container mx-auto px-2 py-1 flex justify-between items-center">
           <div className="flex space-x-8">
             <Link href="/dashboard" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
-              <FaHome className="text-2xl text-blue-500 mb-2" /> 
+              <FaHome className="text-2xl text-blue-500 mb-2" />
               <span className="text-sm">Dashboard</span>
             </Link>
             <Link href="/profile" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
@@ -51,12 +54,12 @@ const Navbar = () => {
             <Link href="/InstituteProfile" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaUniversity className="text-2xl text-green-500 mb-2" />
               <span className="text-sm">Institute Profile</span>
-              <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" /> 
+              <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" />
             </Link>
             <Link href="/department" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaFolder className="text-2xl text-red-500 mb-2" />
               <span className="text-sm">Departments & Programs</span>
-              <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" /> 
+              <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" />
             </Link>
             <Link href="/Faculty" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaChalkboardTeacher className="text-2xl text-purple-500 mb-2" />
@@ -65,7 +68,7 @@ const Navbar = () => {
             <Link href="/students-directory" className="flex flex-col items-center text-gray-700 hover:text-white hover:bg-green-500 px-3 py-2 rounded">
               <FaUsers className="text-2xl text-black mb-2" />
               <span className="text-sm">Students Directory</span>
-              <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" /> 
+              <MdKeyboardArrowDown className="text-sm text-gray-700 ml-1" />
             </Link>
           </div>
         </div>

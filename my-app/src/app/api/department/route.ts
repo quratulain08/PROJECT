@@ -2,16 +2,16 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Department from '../../../models/Department';
 
-// GET: Fetch all departments from the database.
+// GET: Fetch all departments or a specific department by ID from the database.
 export async function GET(req: Request) {
   try {
+    await connectToDatabase();
+
     const url = new URL(req.url);
     const id = url.pathname.split('/').pop();
 
-    await connectToDatabase();
-
-    if (id && id !== 'department') {
-      // Fetch single department by ID
+    // If id exists, fetch a single department
+    if (id && id !== 'departments') {
       const department = await Department.findById(id);
       if (!department) {
         return NextResponse.json({ error: 'Department not found' }, { status: 404 });
@@ -19,7 +19,7 @@ export async function GET(req: Request) {
       return NextResponse.json(department);
     }
 
-    // Fetch all departments
+    // Otherwise, fetch all departments
     const departments = await Department.find();
     return NextResponse.json(departments);
   } catch (error) {
