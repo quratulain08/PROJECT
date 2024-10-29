@@ -81,7 +81,7 @@ const DepartmentDashboard: React.FC = () => {
       setIsSubmitting(false); // End submission process
     }
   };
-  
+
   return (
     <div className="max-w-8xl mx-auto w-full">
       <div className="flex justify-between items-center mb-4">
@@ -280,29 +280,25 @@ const DepartmentDashboard: React.FC = () => {
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Submit Button and Status Message */}
-          <div className="lg:col-span-2 mt-4 text-center">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-            >
-              {isSubmitting ? 'Creating...' : 'Create Department'}
-            </button>
-            {statusMessage && <p className="mt-4 text-green-600">{statusMessage}</p>}
-          </div>
+        {statusMessage && (
+          <div className="mt-4 text-green-600">{statusMessage}</div>
+        )}
+
+        <div className="flex justify-between mt-4">
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`bg-green-600 text-white py-2 px-4 rounded-md ${isSubmitting ? 'opacity-50' : ''}`}
+          >
+            {isSubmitting ? 'Submitting...' : 'Add Department'}
+          </button>
         </div>
       </form>
 
-      
-      <div className="container mx-auto px-4 py-8">
-                <DepartmentInfo />
-            </div>
+     
     </div>
-
-    
   );
 };
 
