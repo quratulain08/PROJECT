@@ -1,14 +1,17 @@
+"use client";
+
 import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
-import Department from '../../../models/Department';
+import Department from '@/models/Department';
+import { useParams } from "next/navigation";
 
+const params = useParams();
+const _id = params.slug; // Adjusted to match the dynamic route
 
 
 export async function GET(req: Request) {
   try {
-    const url = new URL(req.url);
-    const parts = url.pathname.split('/');
-    const _id = parts[parts.length - 1];
+    
 
     await connectToDatabase();
     console.log(_id);

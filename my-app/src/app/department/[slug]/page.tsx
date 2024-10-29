@@ -24,21 +24,28 @@ const DepartmentDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const params = useParams();
-  const id = params.id; // Get department ID from the dynamic route
+  const id = params.slug; // Adjusted to match the dynamic route
 
   useEffect(() => {
     if (id) fetchDepartment();
   }, [id]);
 
   const fetchDepartment = async () => {
-    try {
-      const response = await fetch(`/api/department/${id}`);
+ 
+      try {
+        const response = await fetch(`/api/department/${id}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+    
       if (!response.ok) throw new Error("Failed to fetch department details");
 
       const data = await response.json();
       setDepartment(data);
     } catch (err) {
-      setError("Error fetching department information.");
+      console.error("Fetch error:", err); // Log the error for debugging
+      setError("Error fetching department information.heelo");
     } finally {
       setLoading(false);
     }
