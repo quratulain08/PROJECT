@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation"; // Import useRouter
+import DepartmentDashboard from "@/app/components/departmentForm";
 
 interface Department {
   id: string;
@@ -19,13 +20,15 @@ interface Department {
   city: string;
 }
 
-const DepartmentInfo: React.FC = () => {
+const DepartmentList: React.FC = () => {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // State for modal visibility
 
-  const router = useRouter();
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     fetchDepartments();
@@ -45,34 +48,6 @@ const DepartmentInfo: React.FC = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this department?")) {
-      try {
-        const response = await fetch(`/api/department/${id}`, {
-          method: "DELETE",
-        });
-        if (!response.ok) throw new Error("Failed to delete department");
-
-        setDepartments(departments.filter((dept) => dept.id !== id));
-      } catch (err) {
-        console.error(err);
-        setError("Failed to delete the department.");
-      }
-    }
-  };
-
-  const handleEdit = (department: Department) => {
-    setEditingDepartment(department);
-    router.push('/DepartmentForm');
-  };
-
-  const handleAddNewDepartment = () => {
-    try {
-      router.push('/DepartmentForm');
-    } catch (error: unknown) {
-      console.error('Navigation error:', error);
-    }
-  };
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-600">{error}</p>;
@@ -81,13 +56,7 @@ const DepartmentInfo: React.FC = () => {
     <div className="max-w-8xl mx-auto w-full">
       <h1 className="text-lg font-semibold mb-6">Departments</h1>
 
-      {/* Add New Department Button */}
-      <button
-        onClick={handleAddNewDepartment}
-        className="bg-green-600 text-white px-4 py-2 rounded mb-4 hover:bg-green-700"
-      >
-        Add New Department
-      </button>
+     
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {departments.length === 0 ? (
@@ -126,25 +95,16 @@ const DepartmentInfo: React.FC = () => {
                 {dept.city}, {dept.province}
               </p>
               <div className="mt-4 flex space-x-2">
-                <button
-                  className="border border-yellow-500 text-yellow-500 px-4 py-2 rounded hover:bg-yellow-500 hover:text-white"
-                  onClick={() => handleEdit(dept)}
-                >
-                  Edit
-                </button>
-                <button
-                  className="border border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-500 hover:text-white"
-                  onClick={() => handleDelete(dept.id)}
-                >
-                  Delete
-                </button>
+              
               </div>
             </div>
           ))
         )}
       </div>
+
+   
     </div>
   );
 };
 
-export default DepartmentInfo;
+export default DepartmentList;
