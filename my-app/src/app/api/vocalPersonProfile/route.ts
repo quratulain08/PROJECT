@@ -9,7 +9,7 @@ export async function GET() {
     await connectToDatabase();
 
     // Fetch the vocal person profile.
-    const vocalPerson = await VocalPerson.findOne();
+    const vocalPerson = await VocalPerson.find();
 
     if (!vocalPerson) {
       return NextResponse.json({ error: 'Vocal Person not found' }, { status: 404 });

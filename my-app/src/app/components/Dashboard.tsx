@@ -36,7 +36,6 @@ const StudentDashboard: React.FC = () => {
   const [selectedBatch, setSelectedBatch] = useState<string>("");
 
   useEffect(() => {
-    // Fetch students data from your backend API
     const fetchStudents = async () => {
       try {
         const response = await fetch("/api/students");
@@ -51,9 +50,10 @@ const StudentDashboard: React.FC = () => {
   }, []);
 
   // Filter logic based on selected department and batch
-  const filteredStudents = students.filter((student) =>
-    (selectedDepartment ? student.department === selectedDepartment : true) &&
-    (selectedBatch ? student.batch === selectedBatch : true)
+  const filteredStudents = students.filter(
+    (student) =>
+      (selectedDepartment ? student.department === selectedDepartment : true) &&
+      (selectedBatch ? student.batch === selectedBatch : true)
   );
 
   // Get statistics for graphs
@@ -106,9 +106,9 @@ const StudentDashboard: React.FC = () => {
           className="p-2 border rounded-md"
         >
           <option value="">All Departments</option>
-          <option value="CS">Computer Science</option>
-          <option value="EE">Electrical Engineering</option>
-          <option value="ME">Mechanical Engineering</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Electrical Engineering">Electrical Engineering</option>
+          <option value="Mechanical Engineering">Mechanical Engineering</option>
         </select>
 
         <select
@@ -134,6 +134,9 @@ const StudentDashboard: React.FC = () => {
         <div className="bg-white p-4 shadow-md rounded-md">
           <h2 className="text-xl font-bold mb-4">Internship Status</h2>
           <Pie data={pieChartData} />
+          <p className="text-center mt-4 text-lg font-semibold">
+            Total Students: {totalStudents}
+          </p>
         </div>
       </div>
     </div>

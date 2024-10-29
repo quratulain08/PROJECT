@@ -1,6 +1,6 @@
 // src/components/Layout.tsx
 import React from 'react';
-import Navbar from './navbar'; 
+import Navbar from '../navbar/page'; 
 
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -8,7 +8,6 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <>
       <Navbar />
       <main>{children}</main>
-     
     </>
   );
 };

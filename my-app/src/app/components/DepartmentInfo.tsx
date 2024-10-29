@@ -45,20 +45,29 @@ const DepartmentInfo: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm("Are you sure you want to delete this department?")) {
-      try {
-        const response = await fetch(`/api/department/${id}`, {
-          method: "DELETE",
-        });
-        if (!response.ok) throw new Error("Failed to delete department");
-
-        setDepartments(departments.filter((dept) => dept.id !== id));
-      } catch (err) {
-        console.error(err);
-        setError("Failed to delete the department.");
-      }
-    }
-  };
+    
+        try {
+          const response = await fetch('/api/department', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id }),
+          });
+      
+          const result = await response.json();
+      
+          if (response.ok) {
+            alert(result.message);
+            // Refresh the department list or update the state
+          } else {
+            alert(`Error: ${result.error}`);
+          }
+        } catch (error) {
+          console.error('Error deleting department:', error);
+          alert('Failed to delete department.');
+        }
+      };
+      
+  
 
   const handleEdit = (department: Department) => {
     setEditingDepartment(department);
@@ -124,6 +133,9 @@ const DepartmentInfo: React.FC = () => {
             </p>
             <p>
               <span className="font-bold">Phone:</span> {dept.phone}
+            </p>
+            <p>
+              <span className="font-bold">id:</span> {dept._id}
             </p>
             {dept.landLine && (
               <p>

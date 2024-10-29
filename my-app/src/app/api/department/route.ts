@@ -54,19 +54,26 @@ export async function PUT(req: Request) {
 
 // DELETE: Remove a department from the database by ID.
 export async function DELETE(req: Request) {
-  try {
-    const { id } = await req.json(); // Get the id from the request body
-    await connectToDatabase(); // Ensure the database is connected
-
-    const deletedDepartment = await Department.findByIdAndDelete(id); // Delete the department by id
-
-    if (!deletedDepartment) {
-      return NextResponse.json({ error: 'Department not found' }, { status: 404 });
+    try {
+      const { id } = await req.json(); // Extract the department ID from the request
+  
+      if (!id) {
+        return NextResponse.json({ error: 'Department ID is required' }, { status: 400 });
+      }
+  
+      await connectToDatabase(); // Ensure database connection
+  
+      const deletedDepartment = await Department.findByIdAndDelete(id); // Delete by ID
+  
+      if (!deletedDepartment) {
+        return NextResponse.json({ error: 'Department not found' }, { status: 404 });
+      }
+  
+      return NextResponse.json({ message: 'Department deleted successfully!' }, { status: 200 });
+    } catch (error) {
+      console.error('Error deleting department:', error);
+      return NextResponse.json({ error: 'Failed to delete department' }, { status: 500 });
     }
-
-    return NextResponse.json({ message: 'Department deleted successfully!' });
-  } catch (error) {
-    console.error('Error deleting department:', error);
-    return NextResponse.json({ error: 'Failed to delete department' }, { status: 500 });
   }
-}
+  
+
