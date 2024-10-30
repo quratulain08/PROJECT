@@ -1,16 +1,27 @@
-// app/api/department/[id]/route.ts
 import { NextResponse } from 'next/server';
+import Department from '@/models/Department';
+import connectToDatabase from '@/lib/mongodb';
+import { Types } from 'mongoose';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { slug: string } }
 ) {
   try {
-    const id = params.id;
-    
-    // Replace this with your actual database call
-    const department = await getDepartmentFromDatabase(id);
-    
+    const { slug } = params; // Get the slug from params
+    console.log("Received slug:", slug); // Debugging log
+
+    // Check if slug is a valid ObjectId
+    if (!Types.ObjectId.isValid(slug)) {
+      return NextResponse.json(
+        { message: `Invalid department ID: ${slug}` },
+        { status: 400 }
+      );
+    }
+
+    await connectToDatabase(); // Ensure DB connection
+
+    const department = await Department.findById(slug); // Use slug to fetch by ID
     if (!department) {
       return NextResponse.json(
         { message: 'Department not found' },
@@ -18,6 +29,7 @@ export async function GET(
       );
     }
 
+    // Return the department data
     return NextResponse.json(department);
   } catch (error) {
     console.error('Department fetch error:', error);
@@ -26,24 +38,4 @@ export async function GET(
       { status: 500 }
     );
   }
-}
-
-// Mock function - replace with your actual database logic
-async function getDepartmentFromDatabase(id: string) {
-  // Replace this with your actual database query
-  // This is just an example
-  return {
-    _id: id,
-    name: "Computer Science",
-    startDate: "2024-01-01",
-    category: "Science",
-    hodName: "John Doe",
-    honorific: "Dr.",
-    cnic: "1234567890",
-    email: "john@example.com",
-    phone: "123-456-7890",
-    address: "123 University Road",
-    province: "Province",
-    city: "City"
-  };
 }
