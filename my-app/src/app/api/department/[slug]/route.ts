@@ -1,96 +1,49 @@
-"use client";
-
+// app/api/department/[id]/route.ts
 import { NextResponse } from 'next/server';
-import connectToDatabase from '@/lib/mongodb';
-import Department from '@/models/Department';
-import { useParams } from "next/navigation";
 
-const params = useParams();
-const _id = params.slug; // Adjusted to match the dynamic route
-
-
-export async function GET(req: Request) {
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   try {
+    const id = params.id;
     
-
-    await connectToDatabase();
-    console.log(_id);
-    if (_id && _id !== 'department') {
-      const department = await Department.findById(_id);
-      if (!department) {
-        return NextResponse.json({ error: 'Department not found' }, { status: 404 });
-      }
-      return NextResponse.json(department);
+    // Replace this with your actual database call
+    const department = await getDepartmentFromDatabase(id);
+    
+    if (!department) {
+      return NextResponse.json(
+        { message: 'Department not found' },
+        { status: 404 }
+      );
     }
 
-    const departments = await Department.find();
-    return NextResponse.json(departments);
+    return NextResponse.json(department);
   } catch (error) {
-    console.error('Error fetching departments: ', error);
-    return NextResponse.json({ error: 'Failed to fetch departments' }, { status: 500 });
+    console.error('Department fetch error:', error);
+    return NextResponse.json(
+      { message: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
 
-export async function POST(req: Request) {
-  try {
-    const departmentData = await req.json();
-    await connectToDatabase();
-
-    if (!departmentData.name || !departmentData.hodName) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
-    }
-
-    const newDepartment = new Department(departmentData);
-    await newDepartment.save();
-
-    return NextResponse.json(newDepartment, { status: 201 });
-  } catch (error) {
-    console.error('Error creating department:', error);
-    return NextResponse.json({ error: 'Failed to create department' }, { status: 500 });
-  }
-}
-
-export async function PUT(req: Request) {
-  try {
-    const { id, ...updatedData } = await req.json();
-    await connectToDatabase();
-
-    if (!id) {
-      return NextResponse.json({ error: 'Missing department ID' }, { status: 400 });
-    }
-
-    const updatedDepartment = await Department.findByIdAndUpdate(id, updatedData, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedDepartment) {
-      return NextResponse.json({ error: 'Department not found' }, { status: 404 });
-    }
-
-    return NextResponse.json(updatedDepartment);
-  } catch (error) {
-    console.error('Error updating department:', error);
-    return NextResponse.json({ error: 'Failed to update department' }, { status: 500 });
-  }
-}
-
-export async function DELETE(req: Request) {
-  try {
-    const url = new URL(req.url);
-    const parts = url.pathname.split('/');
-    const id = parts[parts.length - 1];
-
-    await connectToDatabase();
-
-    const deletedDepartment = await Department.findByIdAndDelete(id);
-    if (!deletedDepartment) {
-      return NextResponse.json({ error: 'Department not found' }, { status: 404 });
-    }
-
-    return NextResponse.json({ message: 'Department deleted successfully!' });
-  } catch (error) {
-    console.error('Error deleting department:', error);
-    return NextResponse.json({ error: 'Failed to delete department' }, { status: 500 });
-  }
+// Mock function - replace with your actual database logic
+async function getDepartmentFromDatabase(id: string) {
+  // Replace this with your actual database query
+  // This is just an example
+  return {
+    _id: id,
+    name: "Computer Science",
+    startDate: "2024-01-01",
+    category: "Science",
+    hodName: "John Doe",
+    honorific: "Dr.",
+    cnic: "1234567890",
+    email: "john@example.com",
+    phone: "123-456-7890",
+    address: "123 University Road",
+    province: "Province",
+    city: "City"
+  };
 }

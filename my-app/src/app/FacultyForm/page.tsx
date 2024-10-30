@@ -1,5 +1,7 @@
 "use client";
+
 import React, { useState } from 'react';
+import { useRouter, useSearchParams } from "next/navigation";
 
 const provinces = [
     { name: 'Punjab', cities: ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan'] },
@@ -11,8 +13,13 @@ const provinces = [
 ];
 
 export default function FacultyForm() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const departmentId = searchParams.get('departmentId');
+
     const [selectedProvince, setSelectedProvince] = useState<string>('');
     const [selectedCity, setSelectedCity] = useState<string>('');
+    const [honorific, setHonorific] = useState<string>('Mr');
     const [name, setName] = useState<string>('');
     const [cnic, setCnic] = useState<string>('');
     const [gender, setGender] = useState<string>('Male');
@@ -34,15 +41,23 @@ export default function FacultyForm() {
 
     const handleProvinceChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         setSelectedProvince(event.target.value);
-        setSelectedCity(''); // Reset city selection
+        setSelectedCity('');
     };
 
-    const handleSubmit = async (event: React.FormEvent) => {
+    async function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         setLoading(true);
         setMessage('');
+      
+        if (!departmentId) {
+          setMessage('Department ID is missing');
+          setLoading(false);
+          return;
+        }
 
         const facultyData = {
+            departmentId,
+            honorific,
             name,
             cnic,
             gender,
@@ -65,32 +80,40 @@ export default function FacultyForm() {
             }
         };
 
-        try {
-            const response = await fetch('/api/faculty', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(facultyData),
-            });
+      
+  try {
+    const response = await fetch('/api/faculty', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(facultyData),
+    });
 
-            if (!response.ok) {
-                throw new Error('Failed to create faculty member');
-            }
-
-            const data = await response.json();
-            setMessage(`Faculty member ${data.name} created successfully!`);
-            // Clear the form or reset state here if needed
-        } catch (error: unknown) {
-    if (error instanceof Error) {
-        setMessage(`Error: ${error.message}`);
-    } else {
-        setMessage('An unknown error occurred.');
+    if (!response.ok) {
+      throw new Error('Failed to create faculty member');
     }
-}
 
+    const data = await response.json();
+    setMessage('Faculty member created successfully!');
+            
+            // Navigate back to department detail page after successful submission
+            setTimeout(() => {
+                router.push(`/Department/${departmentId}`);
+              }, 1500);
+            } catch (error: unknown) {
+              if (error instanceof Error) {
+                setMessage(`Error: ${error.message}`);
+              } else {
+                setMessage('An unknown error occurred.');
+              }
+            } finally {
+              setLoading(false);
+            }
+          
     };
 
+   
     return (
         <div className="max-w-8xl mx-auto w-full">
             <form className="p-2 text-sm" onSubmit={handleSubmit}>

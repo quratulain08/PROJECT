@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 interface Department {
-  id: string;
+  _id: string;  // Changed from 'id' to '_id' to match MongoDB
   name: string;
   startDate: string;
   category: string;
@@ -47,17 +47,16 @@ const DepartmentInfo: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this department?')) {
       try {
-        const response = await fetch('/api/department', {
+        const response = await fetch(`/api/department/${id}`, {  // Updated to use URL parameter
           method: 'DELETE',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id }),
+          headers: { 'Content-Type': 'application/json' }
+          // Removed body since we're using URL parameter
         });
     
         const result = await response.json();
     
         if (response.ok) {
           alert(result.message);
-          // Refresh the departments list
           fetchDepartments();
         } else {
           alert(`Error: ${result.error}`);
@@ -70,13 +69,11 @@ const DepartmentInfo: React.FC = () => {
   };
 
   const handleEdit = (department: Department) => {
-    // Store the department data in localStorage before navigation
     localStorage.setItem('editingDepartment', JSON.stringify(department));
     router.push('/DepartmentForm');
   };
 
   const handleAddNewDepartment = () => {
-    // Clear any existing department data in localStorage
     localStorage.removeItem('editingDepartment');
     router.push('/DepartmentForm');
   };
@@ -125,41 +122,41 @@ const DepartmentInfo: React.FC = () => {
                     onClick={() => handleEdit(dept)}
                     className="text-yellow-500 hover:text-yellow-600 p-2"
                     title="Edit"
-                    >
-                      <FaEdit size={20} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(dept._id)}
-                      className="text-red-500 hover:text-red-600 p-2"
-                      title="Delete"
-                    >
-                      <FaTrash size={20} />
-                    </button>
-                  </div>
-                </div>
-  
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                  <div key={`${dept._id}-details-1`}>
-                    <p><span className="font-semibold">Category:</span> {dept.category}</p>
-                    <p><span className="font-semibold">Start Date:</span> {dept.startDate}</p>
-                    <p><span className="font-semibold">CNIC:</span> {dept.cnic}</p>
-                    <p><span className="font-semibold">Email:</span> {dept.email}</p>
-                  </div>
-                  <div key={`${dept._id}-details-2`}>
-                    <p><span className="font-semibold">Phone:</span> {dept.phone}</p>
-                    {dept.landLine && (
-                      <p><span className="font-semibold">Land Line:</span> {dept.landLine}</p>
-                    )}
-                    <p><span className="font-semibold">Address:</span> {dept.address}</p>
-                    <p><span className="font-semibold">Location:</span> {dept.city}, {dept.province}</p>
-                  </div>
+                  >
+                    <FaEdit size={20} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(dept._id)}
+                    className="text-red-500 hover:text-red-600 p-2"
+                    title="Delete"
+                  >
+                    <FaTrash size={20} />
+                  </button>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
-    );
-  };
-  
-  export default DepartmentInfo;
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div key={`${dept._id}-details-1`}>
+                  <p><span className="font-semibold">Category:</span> {dept.category}</p>
+                  <p><span className="font-semibold">Start Date:</span> {dept.startDate}</p>
+                  <p><span className="font-semibold">CNIC:</span> {dept.cnic}</p>
+                  <p><span className="font-semibold">Email:</span> {dept.email}</p>
+                </div>
+                <div key={`${dept._id}-details-2`}>
+                  <p><span className="font-semibold">Phone:</span> {dept.phone}</p>
+                  {dept.landLine && (
+                    <p><span className="font-semibold">Land Line:</span> {dept.landLine}</p>
+                  )}
+                  <p><span className="font-semibold">Address:</span> {dept.address}</p>
+                  <p><span className="font-semibold">Location:</span> {dept.city}, {dept.province}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default DepartmentInfo;

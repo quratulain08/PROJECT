@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import DepartmentDashboard from "@/app/components/departmentForm";
 
 interface Department {
-  id: string;
+  _id: string;
   name: string;
   startDate: string;
   category: string;
@@ -45,7 +45,7 @@ const DepartmentList: React.FC = () => {
   };
 
   const handleDepartmentClick = (id: string) => {
-    router.push(`/department/${id}`); // Navigate to department detail page
+    router.push(`/Department/${id}`); // Navigate to department detail page
   };
 
   if (loading) return <p>Loading...</p>;
@@ -62,10 +62,10 @@ const DepartmentList: React.FC = () => {
           departments.map((dept) => (
             <div
               key={dept._id}
-              className="border border-green-500 rounded-lg shadow-lg p-6 bg-white cursor-pointer hover:shadow-xl transition-shadow"
               onClick={() => handleDepartmentClick(dept._id)}
               role="button"
               tabIndex={0}
+              className="p-4 bg-white border rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer"
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
                   handleDepartmentClick(dept._id);
