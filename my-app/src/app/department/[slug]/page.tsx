@@ -75,46 +75,51 @@ export default function DepartmentDetail() {
     return response.json();
   };
 
- // src/app/Department/[slug]/page.tsx
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      if (!id) {
-        setError({ message: "Department ID is missing" });
-        return;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!id) {
+          setError({ message: "Department ID is missing" });
+          return;
+        }
+
+        const deptData = await fetchWithErrorHandling(`/api/department/${id}`);
+        setDepartment(deptData);
+
+        const facultyData = await fetchWithErrorHandling(`/api/faculty/department/${id}`);
+        setFacultyMembers(facultyData);
+
+        setError(null);
+      } catch (err) {
+        console.error('Error:', err);
+        let errorMessage = 'Error fetching data';
+        let errorDetails = '';
+
+        if (err instanceof Error) {
+          errorMessage = err.message;
+          errorDetails = err.stack || '';
+        }
+
+        setError({
+          message: errorMessage,
+          details: errorDetails
+        });
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const deptData = await fetchWithErrorHandling(`/api/department/${id}`);
-      setDepartment(deptData);
-
-      const facultyData = await fetchWithErrorHandling(`/api/faculty/department/${id}`);
-      setFacultyMembers(facultyData);
-
-      setError(null);
-    } catch (err) {
-      console.error('Error:', err);
-      let errorMessage = 'Error fetching data';
-      let errorDetails = '';
-
-      if (err instanceof Error) {
-        errorMessage = err.message;
-        errorDetails = err.stack || '';
-      }
-
-      setError({
-        message: errorMessage,
-        details: errorDetails
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, [id]);
+    fetchData();
+  }, [id]);
 
   const handleAddFaculty = () => {
-    router.push(`/FacultyForm?departmentId=${id}`);
+    if (department) {
+      // Correctly encode parameters for Next.js routing
+      const queryString = `departmentId=${encodeURIComponent(id)}&departmentName=${encodeURIComponent(department.name)}`;
+      router.push(`/FacultyForm?${queryString}`);
+    } else {
+      setError({ message: "Department information is not available" });
+    }
   };
 
   const handleRetry = () => {

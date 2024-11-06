@@ -15,7 +15,8 @@ const provinces = [
 export default function FacultyForm() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const departmentId = searchParams.get('departmentId');
+        const departmentId = searchParams.get('departmentId');
+        const departmentName = searchParams.get('departmentName');
 
     const [selectedProvince, setSelectedProvince] = useState<string>('');
     const [selectedCity, setSelectedCity] = useState<string>('');
@@ -100,17 +101,16 @@ export default function FacultyForm() {
             // Navigate back to department detail page after successful submission
             setTimeout(() => {
                 router.push(`/Department/${departmentId}`);
-              }, 1500);
-            } catch (error: unknown) {
-              if (error instanceof Error) {
+            }, 1500);
+        } catch (error: unknown) {
+            if (error instanceof Error) {
                 setMessage(`Error: ${error.message}`);
-              } else {
+            } else {
                 setMessage('An unknown error occurred.');
-              }
-            } finally {
-              setLoading(false);
             }
-          
+        } finally {
+            setLoading(false);
+        }
     };
 
    

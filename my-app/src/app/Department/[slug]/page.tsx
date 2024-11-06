@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 
 interface Department {
-  _id: string;
+  id: string;
   name: string;
   startDate: string;
   category: string;
@@ -20,7 +20,7 @@ interface Department {
 }
 
 interface Faculty {
-  _id: string;
+  id: string;
   departmentId: string;
   honorific: string;
   name: string;
@@ -75,46 +75,51 @@ export default function DepartmentDetail() {
     return response.json();
   };
 
- // src/app/Department/[slug]/page.tsx
-useEffect(() => {
-  const fetchData = async () => {
-    try {
-      if (!id) {
-        setError({ message: "Department ID is missing" });
-        return;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (!id) {
+          setError({ message: "Department ID is missing" });
+          return;
+        }
+
+        const deptData = await fetchWithErrorHandling(`/api/department/${id}`);
+        setDepartment(deptData);
+
+        const facultyData = await fetchWithErrorHandling(`/api/faculty/department/${id}`);
+        setFacultyMembers(facultyData);
+
+        setError(null);
+      } catch (err) {
+        console.error('Error:', err);
+        let errorMessage = 'Error fetching data';
+        let errorDetails = '';
+
+        if (err instanceof Error) {
+          errorMessage = err.message;
+          errorDetails = err.stack || '';
+        }
+
+        setError({
+          message: errorMessage,
+          details: errorDetails
+        });
+      } finally {
+        setLoading(false);
       }
+    };
 
-      const deptData = await fetchWithErrorHandling(`/api/department/${id}`);
-      setDepartment(deptData);
-
-      const facultyData = await fetchWithErrorHandling(`/api/faculty/department/${id}`);
-      setFacultyMembers(facultyData);
-
-      setError(null);
-    } catch (err) {
-      console.error('Error:', err);
-      let errorMessage = 'Error fetching data';
-      let errorDetails = '';
-
-      if (err instanceof Error) {
-        errorMessage = err.message;
-        errorDetails = err.stack || '';
-      }
-
-      setError({
-        message: errorMessage,
-        details: errorDetails
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchData();
-}, [id]);
+    fetchData();
+  }, [id]);
 
   const handleAddFaculty = () => {
-    router.push(`/FacultyForm?departmentId=${id}`);
+    if (department) {
+      // Correctly encode parameters for Next.js routing
+      const queryString = `departmentId=${encodeURIComponent(id)}&departmentName=${encodeURIComponent(department.name)}`;
+      router.push(`/FacultyForm?${queryString}`);
+    } else {
+      setError({ message: "Department information is not available" });
+    }
   };
 
   const handleRetry = () => {
@@ -166,6 +171,7 @@ useEffect(() => {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
+      <h1>{id}</h1>
       <div className="bg-white rounded-lg shadow-lg p-8 border border-green-500 mb-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-semibold text-green-600">
@@ -222,7 +228,7 @@ useEffect(() => {
         ) : (
           <div className="grid grid-cols-1 gap-6">
             {facultyMembers.map((faculty) => (
-              <div key={faculty._id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+              <div key={faculty.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   <div>
                     <p className="font-semibold">{faculty.honorific} {faculty.name}</p>
